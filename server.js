@@ -3,6 +3,7 @@
 const express = require('express');
 const app = express();
 const chatApp = require('./app');
+const passport = require('passport');
 
 //CONFIG
 app.set('port', process.env.PORT || 3000);
@@ -11,6 +12,9 @@ app.set('view engine', 'ejs');
 
 //MIDDLEWARE
 app.use(express.static('public'));
+app.use(chatApp.session);
+app.use(passport.initialize());
+app.use(passport.session());
 
 //ROUTES
 app.use('/', chatApp.router);

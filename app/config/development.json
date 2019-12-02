@@ -1,0 +1,11 @@
+{
+  "host": "http://localhost:3000",
+  "dbURI": "mongodb+srv://chatapp:mChzIQzYr7ZIOVSC@cluster0-e8muj.mongodb.net/ChatAppDB?retryWrites=true&w=majority",
+  "sessionSecret": "kochamTrusie",
+  "fb": {
+    "clientID": "587733802036463",
+    "clientSecret": "a36bca8d1ba50e7fb60381ecc6a5e9df",
+    "callbackURL": "//localhost:3000/auth/facebook/callback",
+    "profileFields": ["id", "displayName", "photos"]
+  }
+}
