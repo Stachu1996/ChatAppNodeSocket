@@ -1,6 +1,7 @@
 'use strict';
 const router = require('express').Router();
 const db = require('../db');
+const crypto = require('crypto');
 
 const _registerRoutes = (routes, method) => {
     for(let key in routes){
@@ -62,9 +63,83 @@ let findById = id => {
     });
 };
 
+let isAuthenticated = (req, res, next) => {
+    if(req.isAuthenticated()){
+        next();
+    } else {
+        res.redirect('/');
+    }
+};
+
+//find a chatroom by a given name
+let findRoomByName = (allrooms, room) => {
+   let findRoom = allrooms.findIndex((element, index, array) => {
+       return element.room === room;
+   });
+   return findRoom > -1;
+};
+
+//generate uid
+const randomHex = () => {
+    return crypto.randomBytes(24).toString('hex');
+};
+
+const findRoomById = (allrooms, roomID) => {
+    return allrooms.find((element, index, array) => {
+        return element.roomID === roomID;
+    });
+};
+
+const addUserToRoom = (allrooms, data, socket) => {
+    let getRoom = findRoomById(allrooms, data.roomID);
+    if(getRoom !== undefined){
+        //Get active user's ID
+        let userID = socket.request.session.passport.user;
+        let checkUser = getRoom.users.findIndex((element, index, array) => {
+            return element.userID === userID;
+        });
+
+        // if user is already present in the room
+        if(checkUser > -1) getRoom.users.splice(checkUser, 1);
+
+        //push user in to chanel
+        getRoom.users.push({
+            socketID: socket.id,
+            userID,
+            user: data.user,
+            userPic: data.userPic
+        });
+
+        //join the room chanel
+        socket.join(data.roomID);
+
+        return getRoom;
+    }
+};
+
+const removeUserFromRoom = (allrooms, socket) => {
+    for(let room of allrooms){
+        let findUser = room.users.findIndex((element, index, array) => {
+            return element.socketID === socket.id;
+        });
+
+        if(findUser > -1){
+            socket.leave(room.roomID);
+            room.users.splice(findUser, 1);
+            return room;
+        }
+    }
+};
+
 module.exports = {
     route,
     findOne,
     createNewUser,
-    findById
+    findById,
+    isAuthenticated,
+    findRoomByName,
+    findRoomById,
+    randomHex,
+    addUserToRoom,
+    removeUserFromRoom
 };

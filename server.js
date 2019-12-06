@@ -20,7 +20,7 @@ app.use(passport.session());
 app.use('/', chatApp.router);
 
 //SERVER
-app.listen(app.get('port'), () => {
+chatApp.ioServer(app).listen(app.get('port'), () => {
    console.log('ChatApp Running on Port: ', app.get('port'));
 });
 

@@ -12,10 +12,10 @@ module.exports = () => {
     passport.deserializeUser((id, done) => {
         helpers.findById(id)
             .then(user => done(null, user))
-            .catch(error => console.warn("Error when deserializing the user"));
+            .catch(error => console.warn("Error when deserialization the user"));
     });
 
-    let authProcessor = (accessToken, refreshToken, profile, done) => {
+    const authProcessor = (accessToken, refreshToken, profile, done) => {
         helpers.findOne(profile.id)
             .then(result => {
                 if(result){
